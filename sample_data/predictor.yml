@@ -1,0 +1,25 @@
+reproduction:
+  date_of_run: 16/10/2025 23:41:34
+  MPKI: 3.3435393385031325
+  num_traces: 440
+  config_hash: 30bfd8e56e40d976d27ba7a7c69fbb07afaa8958aed5925250d19e1f1dae16e1
+  param_hash: 26f4909758d360105264e17b375ca9978e345bd1f21b9c12eece5ad55e4eb8d7
+predictor:
+  name: tage-sc-l-64kb
+  version: 1.0
+  CBP_ver: 2.0
+parameters:
+  BORNTICK:
+    type: int
+    min: 128
+    max: 2048
+    val: 1024
+  SC:
+    type: bool
+    val: true
+  IMLI:
+    type: bool
+    val: true
+  LOCALH:
+    type: bool
+    val: true
