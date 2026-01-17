@@ -1,4 +1,4 @@
-# Branch Predictor Visualization Dashboard
+# Branch Predictor Visualization Dashboard
 
 A Plotly Dash application for visualizing branch predictor simulation results.
 
