@@ -66,6 +66,58 @@ def create_summary_cards(trace_data: dict) -> list:
 
     return cards
 
+def parse_data_for_treemap(data, root_name):
+    labels = [root_name]
+    parents = [""]
+    values = [0]
+
+    def recursive_parse(node_list, parent_name):
+        for item in node_list:
+            key = item['key']
+            val = item['value']
+
+            labels.append(key)
+            parents.append(parent_name)
+
+            if isinstance(val, list):
+                # Container node
+                values.append(0)
+                recursive_parse(val, key)
+            else:
+                # Leaf node
+                values.append(val)
+
+    recursive_parse(data, root_name)
+
+    return labels, parents, values
+
+def create_tree_map(size_map: dict) -> go.Figure:
+    if not size_map:
+        fig = go.Figure()
+        fig.update_layout(
+            title="Dictionary with component sizes not available",
+            template="plotly_white",
+            height=600,
+        )
+        return fig
+
+    labels, parents, values = parse_data_for_treemap(size_map, root_name="Predictor Components")
+
+    # TODO: Fix colors
+    fig = go.Figure(go.Treemap(
+        labels = labels,
+        parents = parents,
+        root_color="lightgrey",
+        values=values
+    ))
+
+    fig.update_layout(
+        title="Predictor Component Sizes",
+        template="plotly_white",
+    )
+
+    return fig
+
 
 def create_timeseries(mpkbr_periodic: list) -> go.Figure:
     if not mpkbr_periodic:
@@ -76,9 +128,6 @@ def create_timeseries(mpkbr_periodic: list) -> go.Figure:
             height=600,
         )
         return fig
-
-    data_len = len(mpkbr_periodic)
-
 
     fig = FigureResampler(go.Figure())
 
@@ -241,6 +290,17 @@ def create_app(data_path: str = "sample_data/example_data.json",
             html.Div(
                 className="chart-container",
                 children=[
+                    html.H3("Size of Individual Predictor Components", className="section-title"),
+                    html.P(
+                        "Visualization of predictor structure and size of all components.",
+                        className="tree-map-description"
+                    ),
+                    dcc.Graph(id='tree-map'),
+                ]
+            ),
+            html.Div(
+                className="chart-container",
+                children=[
                     html.H3("MPKBr Periodic Heatmap", className="section-title"),
                     html.P(
                         "Visualization of mispredictions per 1K branches over time periods. "
@@ -298,6 +358,17 @@ def create_app(data_path: str = "sample_data/example_data.json",
             return go.Figure()
         trace_data = sim_data.get(selected_trace, {})
         return create_timeseries(trace_data.get("MPKBr_periodic", []))
+
+    @app.callback(
+        Output('tree-map', 'figure'),
+        Input('trace-dropdown', 'value'),
+        Input('sim-data-store', 'data')
+    )
+    def update_tree_map(selected_trace, sim_data):
+        if not selected_trace or not sim_data:
+            return go.Figure()
+        trace_data = sim_data.get(selected_trace, {})
+        return create_tree_map(trace_data.get("size_map", []))
 
     return app
 
