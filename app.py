@@ -8,7 +8,7 @@ import math
 import yaml
 from dash import Dash, html, dcc, callback, Output, Input
 import plotly.graph_objects as go
-
+from plotly_resampler import FigureResampler
 
 def load_simulation_data(json_path: str) -> dict:
     """Load simulation results from JSON file."""
@@ -66,6 +66,43 @@ def create_summary_cards(trace_data: dict) -> list:
 
     return cards
 
+
+def create_timeseries(mpkbr_periodic: list) -> go.Figure:
+    if not mpkbr_periodic:
+        fig = go.Figure()
+        fig.update_layout(
+            title="No MPKBr periodic data available",
+            template="plotly_white",
+            height=600,
+        )
+        return fig
+
+    data_len = len(mpkbr_periodic)
+
+
+    fig = FigureResampler(go.Figure())
+
+    fig.add_trace(
+        go.Scattergl(name='MPKBr', showlegend=True, line_color='#440154'),
+        hf_y=mpkbr_periodic
+    )
+
+    fig.update_layout(
+        title="MPKBr over Time",
+        xaxis_title="Number of mispredictions",
+        yaxis_title="Time",
+        template="plotly_white",
+        height=700,
+
+        yaxis=dict(
+            constrain="domain",
+        ),
+        xaxis=dict(
+            constrain="domain",
+        )
+    )
+
+    return fig
 
 def create_heatmap(mpkbr_periodic: list) -> go.Figure:
     if not mpkbr_periodic:
@@ -213,6 +250,18 @@ def create_app(data_path: str = "sample_data/example_data.json",
                     dcc.Graph(id='heatmap-graph'),
                 ]
             ),
+            html.Div(
+                className="chart-container",
+                children=[
+                    html.H3("Misspredictions Per Thousand Branches (MPKBr) over Time", className="section-title"),
+                    html.P(
+                        "Visualization of mispredictions per 1K branches over time periods. "
+                        "Each point represents a thousand retired branches.",
+                        className="heatmap-description"
+                    ),
+                    dcc.Graph(id='timeseries-graph'),
+                ]
+            ),
         ]
     )
 
@@ -239,8 +288,18 @@ def create_app(data_path: str = "sample_data/example_data.json",
         trace_data = sim_data.get(selected_trace, {})
         return create_heatmap(trace_data.get("MPKBr_periodic", []))
 
-    return app
+    @app.callback(
+        Output('timeseries-graph', 'figure'),
+        Input('trace-dropdown', 'value'),
+        Input('sim-data-store', 'data')
+    )
+    def update_timeseries(selected_trace, sim_data):
+        if not selected_trace or not sim_data:
+            return go.Figure()
+        trace_data = sim_data.get(selected_trace, {})
+        return create_timeseries(trace_data.get("MPKBr_periodic", []))
 
+    return app
 
 if __name__ == "__main__":
     app = create_app()
