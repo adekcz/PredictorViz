@@ -13,7 +13,7 @@ from src.components.predictor_info import create_predictor_info
 from src.components.summary_cards import create_summary_cards
 
 
-def create_app(data_path: str = "sample_data/example_data.json",
+def create_app(data_path: str = "sample_data/example_data2.json",
                config_path: str = "sample_data/predictor.yml") -> Dash:
     """Create and configure the Dash application."""
 
