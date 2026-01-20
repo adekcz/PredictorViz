@@ -83,8 +83,8 @@ def create_app(data_path: str = "sample_data/example_data2.json",
                 children=[
                     html.H3("MPKBr Periodic Heatmap", className="section-title"),
                     html.P(
-                        "Visualization of mispredictions per 1K branches over time periods. "
-                        "Each cell represents a measurement period.",
+                        "Visualization of number of access into Bimodal table memory. "
+                        "Each cell represents one Bimodal counter.",
                         className="heatmap-description"
                     ),
                     dcc.Graph(id='heatmap-graph'),
@@ -126,7 +126,7 @@ def create_app(data_path: str = "sample_data/example_data2.json",
         if not selected_trace or not sim_data:
             return go.Figure()
         trace_data = sim_data.get(selected_trace, {})
-        return create_heatmap(trace_data.get("MPKBr_periodic", []))
+        return create_heatmap(trace_data.get("heatmap_bimodal_table", []))
 
     @app.callback(
         Output('timeseries-graph', 'figure'),
