@@ -9,6 +9,7 @@ from src.utils import load_simulation_data, load_predictor_config
 from src.components.treemap import create_tree_map
 from src.components.heatmap import create_heatmap
 from src.components.timeseries import create_timeseries
+from src.components.stacked import create_stacked_area
 from src.components.predictor_info import create_predictor_info
 from src.components.summary_cards import create_summary_cards
 
@@ -102,6 +103,18 @@ def create_app(data_path: str = "sample_data/example_data2.json",
                     dcc.Graph(id='timeseries-graph'),
                 ]
             ),
+            html.Div(
+                className="chart-container",
+                children=[
+                    html.H3("Number of usefull entries in each TAGE Table", className="section-title"),
+                    html.P(
+                        "Evolution of usefull entries in each TAGE table. "
+                        "Sudden dips represent U bit reset which marks entries as not usefull.",
+                        className="heatmap-description"
+                    ),
+                    dcc.Graph(id='stacked-graph'),
+                ]
+            ),
         ]
     )
 
@@ -149,6 +162,17 @@ def create_app(data_path: str = "sample_data/example_data2.json",
             return go.Figure()
         trace_data = sim_data.get(selected_trace, {})
         return create_tree_map(trace_data.get("size_map", []))
+
+    @app.callback(
+        Output('stacked-graph', 'figure'),
+        Input('trace-dropdown', 'value'),
+        Input('sim-data-store', 'data')
+    )
+    def update_stacked_graph(selected_trace, sim_data):
+        if not selected_trace or not sim_data:
+            return go.Figure()
+        trace_data = sim_data.get(selected_trace, {})
+        return create_stacked_area(trace_data.get("tage_usefull_entries", []))
 
     return app
 
