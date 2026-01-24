@@ -124,6 +124,31 @@ def create_app(data_folder: str = "sample_data",
                 ]
             ),
 
+            html.Div(
+                className="chart-container",
+                children=[
+                    html.H3("Misspredictions Per Thousand Branches (MPKBr) over Time", className="section-title"),
+                    html.P(
+                        "Visualization of mispredictions per 1K branches over time periods. "
+                        "Each point represents a thousand retired branches.",
+                        className="heatmap-description"
+                    ),
+                    dcc.Graph(id='timeseries-graph'),
+                ]
+            ),
+            html.Div(
+                className="chart-container",
+                children=[
+                    html.H3("Number of usefull entries in each TAGE Table", className="section-title"),
+                    html.P(
+                        "Evolution of usefull entries in each TAGE table. "
+                        "Sudden dips represent U bit reset which marks entries as not usefull.",
+                        className="heatmap-description"
+                    ),
+                    dcc.Graph(id='stacked-graph'),
+                ]
+            ),
+
             html.Div([
                 html.H3("Predictor Configuration", className="section-title"),
                 create_predictor_info(predictor_config),
@@ -150,30 +175,6 @@ def create_app(data_folder: str = "sample_data",
                         className="heatmap-description"
                     ),
                     dcc.Graph(id='heatmap-graph'),
-                ]
-            ),
-            html.Div(
-                className="chart-container",
-                children=[
-                    html.H3("Misspredictions Per Thousand Branches (MPKBr) over Time", className="section-title"),
-                    html.P(
-                        "Visualization of mispredictions per 1K branches over time periods. "
-                        "Each point represents a thousand retired branches.",
-                        className="heatmap-description"
-                    ),
-                    dcc.Graph(id='timeseries-graph'),
-                ]
-            ),
-            html.Div(
-                className="chart-container",
-                children=[
-                    html.H3("Number of usefull entries in each TAGE Table", className="section-title"),
-                    html.P(
-                        "Evolution of usefull entries in each TAGE table. "
-                        "Sudden dips represent U bit reset which marks entries as not usefull.",
-                        className="heatmap-description"
-                    ),
-                    dcc.Graph(id='stacked-graph'),
                 ]
             ),
         ]
