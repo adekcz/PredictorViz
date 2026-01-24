@@ -2,10 +2,14 @@
 Branch Predictor Visualization Dashboard
 """
 
-from dash import Dash, html, dcc, Output, Input
+from dash import Dash, html, dcc, Output, Input, dash_table
 import plotly.graph_objects as go
 
-from src.utils import load_simulation_data, load_predictor_config
+from src.utils import (
+    load_all_simulation_data,
+    load_predictor_config,
+    extract_trace_summary,
+)
 from src.components.treemap import create_tree_map
 from src.components.heatmap import create_heatmap
 from src.components.timeseries import create_timeseries
@@ -14,15 +18,21 @@ from src.components.predictor_info import create_predictor_info
 from src.components.summary_cards import create_summary_cards
 
 
-def create_app(data_path: str = "sample_data/example_data2.json",
+def create_app(data_folder: str = "sample_data",
                config_path: str = "sample_data/predictor.yml") -> Dash:
     """Create and configure the Dash application."""
 
-    sim_data = load_simulation_data(data_path)
+    sim_data = load_all_simulation_data(data_folder)
     predictor_config = load_predictor_config(config_path)
 
     trace_names = list(sim_data.keys())
-    default_trace = trace_names[0]
+    default_trace = trace_names[0] if trace_names else None
+
+    # Build table data with summary statistics for each trace
+    table_data = [
+        extract_trace_summary(name, sim_data[name])
+        for name in trace_names
+    ]
 
     app = Dash(__name__)
 
@@ -33,25 +43,76 @@ def create_app(data_path: str = "sample_data/example_data2.json",
             # Store simulation data in browser
             dcc.Store(id='sim-data-store', data=sim_data),
 
-            # Header with trace selector
+            # Header
             html.Div(
                 className="header",
                 children=[
                     html.H1("Branch Predictor Visualization"),
-                    html.Div(
-                        className="trace-selector",
-                        children=[
-                            html.Label("Select Trace:"),
-                            dcc.Dropdown(
-                                id='trace-dropdown',
-                                options=[{'label': name, 'value': name} for name in trace_names],
-                                value=default_trace,
-                                className="trace-dropdown",
-                                clearable=False,
-                                style={'color': '#333'}
-                            ),
-                        ]
+                ]
+            ),
+
+            # Trace selector table
+            html.Div(
+                className="chart-container trace-table-container",
+                children=[
+                    html.H3("Select Trace", className="section-title"),
+                    html.P(
+                        "Click on a row to select a trace and update visualizations.",
+                        className="heatmap-description"
                     ),
+                    dash_table.DataTable(
+                        id='trace-table',
+                        columns=[
+                            {"name": "Trace", "id": "Trace"},
+                            {"name": "Instructions", "id": "NUM_INSTRUCTIONS", "type": "numeric",
+                             "format": {"specifier": ",.0f"}},
+                            {"name": "Branches", "id": "NUM_BR", "type": "numeric",
+                             "format": {"specifier": ",.0f"}},
+                            {"name": "Uncond. Branches", "id": "NUM_UNCOND_BR", "type": "numeric",
+                             "format": {"specifier": ",.0f"}},
+                            {"name": "Cond. Branches", "id": "NUM_CONDITIONAL_BR", "type": "numeric",
+                             "format": {"specifier": ",.0f"}},
+                            {"name": "Mispredictions", "id": "NUM_MISPREDICTIONS", "type": "numeric",
+                             "format": {"specifier": ",.0f"}},
+                            {"name": "Mispred/1K Inst", "id": "MISPRED_PER_1K_INST", "type": "numeric",
+                             "format": {"specifier": ".4f"}},
+                        ],
+                        data=table_data,
+                        row_selectable="single",
+                        selected_rows=[0] if table_data else [],
+                        style_table={'overflowX': 'auto'},
+                        style_cell={
+                            'textAlign': 'left',
+                            'padding': '12px 15px',
+                            'fontFamily': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        },
+                        style_header={
+                            'backgroundColor': '#1a365d',
+                            'color': 'white',
+                            'fontWeight': 'bold',
+                            'textAlign': 'left',
+                        },
+                        style_data={
+                            'backgroundColor': 'white',
+                            'color': '#333',
+                        },
+                        style_data_conditional=[
+                            {
+                                'if': {'state': 'selected'},
+                                'backgroundColor': '#e2e8f0',
+                                'border': '1px solid #1a365d',
+                            },
+                            {
+                                'if': {'row_index': 'odd'},
+                                'backgroundColor': '#f8fafc',
+                            },
+                        ],
+                        page_size=10,
+                        sort_action="native",
+                        sort_mode="single",
+                    ),
+                    # Store the selected trace name
+                    dcc.Store(id='selected-trace-store', data=default_trace),
                 ]
             ),
 
@@ -118,10 +179,34 @@ def create_app(data_path: str = "sample_data/example_data2.json",
         ]
     )
 
-    #not tested
+    # Callback to select row when any cell is clicked
+    @app.callback(
+        Output('trace-table', 'selected_rows'),
+        Input('trace-table', 'active_cell'),
+        Input('trace-table', 'selected_rows'),
+    )
+    def select_row_on_cell_click(active_cell, current_selected):
+        if active_cell is None:
+            return current_selected if current_selected else [0]
+        return [active_cell['row']]
+
+    # Callback to update selected trace store when table row is selected
+    @app.callback(
+        Output('selected-trace-store', 'data'),
+        Input('trace-table', 'selected_rows'),
+        Input('trace-table', 'data')
+    )
+    def update_selected_trace(selected_rows, table_data):
+        if not selected_rows or not table_data:
+            return default_trace
+        row_idx = selected_rows[0]
+        if row_idx < len(table_data):
+            return table_data[row_idx]['Trace']
+        return default_trace
+
     @app.callback(
         Output('stats-container', 'children'),
-        Input('trace-dropdown', 'value'),
+        Input('selected-trace-store', 'data'),
         Input('sim-data-store', 'data')
     )
     def update_stats(selected_trace, sim_data):
@@ -132,7 +217,7 @@ def create_app(data_path: str = "sample_data/example_data2.json",
 
     @app.callback(
         Output('heatmap-graph', 'figure'),
-        Input('trace-dropdown', 'value'),
+        Input('selected-trace-store', 'data'),
         Input('sim-data-store', 'data')
     )
     def update_heatmap(selected_trace, sim_data):
@@ -143,7 +228,7 @@ def create_app(data_path: str = "sample_data/example_data2.json",
 
     @app.callback(
         Output('timeseries-graph', 'figure'),
-        Input('trace-dropdown', 'value'),
+        Input('selected-trace-store', 'data'),
         Input('sim-data-store', 'data')
     )
     def update_timeseries(selected_trace, sim_data):
@@ -154,7 +239,7 @@ def create_app(data_path: str = "sample_data/example_data2.json",
 
     @app.callback(
         Output('tree-map', 'figure'),
-        Input('trace-dropdown', 'value'),
+        Input('selected-trace-store', 'data'),
         Input('sim-data-store', 'data')
     )
     def update_tree_map(selected_trace, sim_data):
@@ -165,7 +250,7 @@ def create_app(data_path: str = "sample_data/example_data2.json",
 
     @app.callback(
         Output('stacked-graph', 'figure'),
-        Input('trace-dropdown', 'value'),
+        Input('selected-trace-store', 'data'),
         Input('sim-data-store', 'data')
     )
     def update_stacked_graph(selected_trace, sim_data):
