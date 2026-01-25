@@ -21,8 +21,8 @@ def create_timeseries(mpkbr_periodic: list) -> go.Figure:
 
     fig.update_layout(
         title="MPKBr over Time",
-        xaxis_title="Number of mispredictions",
-        yaxis_title="Time",
+        xaxis_title="Time",
+        yaxis_title="Number of mispredictions",
         template="plotly_white",
         height=700,
 
