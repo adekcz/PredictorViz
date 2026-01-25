@@ -9,10 +9,12 @@ from src.utils import (
     load_all_simulation_data,
     load_predictor_config,
     extract_trace_summary,
+    parse_data_for_loop_frequencies,
 )
 from src.components.treemap import create_tree_map
 from src.components.heatmap import create_heatmap
 from src.components.src_misp import create_src_misp_graph
+from src.components.bar_chart import create_bar_graph
 from src.components.timeseries import create_timeseries
 from src.components.stacked import create_stacked_area
 from src.components.predictor_info import create_predictor_info
@@ -193,6 +195,18 @@ def create_app(data_folder: str = "sample_data",
                     dcc.Graph(id='src-misp-graph'),
                 ]
             ),
+            html.Div(
+                className="chart-container",
+                children=[
+                    html.H3("Lengths of Loops Predicted by Loop Predictor", className="section-title"),
+                    html.P(
+                        "The Loop predictor component finds loops of up to 1024 iterations"
+                        " and is able to predict them perfectly.",
+                        className="heatmap-description"
+                    ),
+                    dcc.Graph(id='loop-frequencies'),
+                ]
+            ),
         ]
     )
 
@@ -286,6 +300,20 @@ def create_app(data_folder: str = "sample_data",
             return go.Figure()
         trace_data = sim_data.get(selected_trace, {})
         return create_src_misp_graph(trace_data)
+
+    @app.callback(
+        Output('loop-frequencies', 'figure'),
+        Input('selected-trace-store', 'data'),
+        Input('sim-data-store', 'data')
+    )
+    def update_loop_freq_graph(selected_trace, sim_data):
+        if not selected_trace or not sim_data:
+            return go.Figure()
+        trace_data = sim_data.get(selected_trace, {})
+
+        data = parse_data_for_loop_frequencies(trace_data.get("loop_predictor_loop_counts", []))
+        return create_bar_graph(data)
+
 
     return app
 

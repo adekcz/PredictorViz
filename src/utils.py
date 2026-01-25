@@ -74,6 +74,21 @@ def parse_data_for_treemap(data, root_name):
 
     return labels, parents, values
 
+def parse_data_for_loop_frequencies(data: dict) -> dict:
+    """
+    Parses the raw dictionary object into a sorted frequency dictionary.
+    """
+    if not data:
+        return {}
+
+    sorted_data = sorted(data, key=lambda x: x.get("key", 0))
+
+    result_dict = {
+        item.get("key"): item.get("value") 
+        for item in sorted_data
+    }
+
+    return result_dict
 
 def format_large_number(num: int | float) -> str:
     """Format large numbers with appropriate suffixes."""
