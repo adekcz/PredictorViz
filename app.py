@@ -12,6 +12,7 @@ from src.utils import (
 )
 from src.components.treemap import create_tree_map
 from src.components.heatmap import create_heatmap
+from src.components.src_misp import create_src_misp_graph
 from src.components.timeseries import create_timeseries
 from src.components.stacked import create_stacked_area
 from src.components.predictor_info import create_predictor_info
@@ -177,6 +178,21 @@ def create_app(data_folder: str = "sample_data",
                     dcc.Graph(id='heatmap-graph'),
                 ]
             ),
+            html.Div(
+                className="chart-container",
+                children=[
+                    html.H3("Source of Mispredictions", className="section-title"),
+                    html.P(
+                        "The TAGE-SC-L predictor has two main components"
+                        " which can be used as a source for prediction -"
+                        " TAGE prediction and the Loop predictor."
+                        " Additionally, the prediction can be subsequently"
+                        " corrected by a Statistical Corrector (SC) component.",
+                        className="heatmap-description"
+                    ),
+                    dcc.Graph(id='src-misp-graph'),
+                ]
+            ),
         ]
     )
 
@@ -259,6 +275,17 @@ def create_app(data_folder: str = "sample_data",
             return go.Figure()
         trace_data = sim_data.get(selected_trace, {})
         return create_stacked_area(trace_data.get("tage_usefull_entries", []))
+
+    @app.callback(
+        Output('src-misp-graph', 'figure'),
+        Input('selected-trace-store', 'data'),
+        Input('sim-data-store', 'data')
+    )
+    def update_src_misp_graph(selected_trace, sim_data):
+        if not selected_trace or not sim_data:
+            return go.Figure()
+        trace_data = sim_data.get(selected_trace, {})
+        return create_src_misp_graph(trace_data)
 
     return app
 
