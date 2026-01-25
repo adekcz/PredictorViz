@@ -11,8 +11,224 @@
         "MPKBr_300M": 0.82084,
         "MPKBr_600M": 0.47572166666666668,
         "MPKBr_1B": 0.418129,
-        "MPKBr_10B": null,
+        "MPKBr_10B": NaN,
         "TRACE": "SHORT_MOBILE-35",
+        "tage_correct": 551435742,
+        "tage_incorrect": 466039,
+        "loop_correct": 2301847,
+        "loop_incorrect": 620,
+        "inter_correct_sc_agree": 553688128,
+        "inter_correct_sc_flip": 44450,
+        "inter_correct_sc_flip_ignored": 5011,
+        "inter_incorrect_sc_agree": 371348,
+        "inter_incorrect_sc_flip": 91360,
+        "inter_incorrect_sc_flip_ignored": 3951,
+        "loop_predictor_loop_counts": [
+            {
+                "key": 17,
+                "value": 237
+            },
+            {
+                "key": 256,
+                "value": 16
+            },
+            {
+                "key": 21,
+                "value": 1631
+            },
+            {
+                "key": 257,
+                "value": 1
+            },
+            {
+                "key": 87,
+                "value": 2
+            },
+            {
+                "key": 255,
+                "value": 22
+            },
+            {
+                "key": 19,
+                "value": 3
+            },
+            {
+                "key": 195,
+                "value": 1
+            },
+            {
+                "key": 61,
+                "value": 14
+            },
+            {
+                "key": 289,
+                "value": 8
+            },
+            {
+                "key": 22,
+                "value": 8
+            },
+            {
+                "key": 152,
+                "value": 1
+            },
+            {
+                "key": 93,
+                "value": 20
+            },
+            {
+                "key": 31,
+                "value": 1
+            },
+            {
+                "key": 132,
+                "value": 3
+            },
+            {
+                "key": 32,
+                "value": 8
+            },
+            {
+                "key": 62,
+                "value": 28
+            },
+            {
+                "key": 3,
+                "value": 35843
+            },
+            {
+                "key": 260,
+                "value": 5
+            },
+            {
+                "key": 57,
+                "value": 58
+            },
+            {
+                "key": 6,
+                "value": 4739
+            },
+            {
+                "key": 65,
+                "value": 604
+            },
+            {
+                "key": 130,
+                "value": 1
+            },
+            {
+                "key": 12,
+                "value": 6665
+            },
+            {
+                "key": 64,
+                "value": 128
+            },
+            {
+                "key": 5,
+                "value": 3175
+            },
+            {
+                "key": 186,
+                "value": 8883
+            },
+            {
+                "key": 9,
+                "value": 498
+            },
+            {
+                "key": 38,
+                "value": 20
+            },
+            {
+                "key": 8,
+                "value": 484
+            },
+            {
+                "key": 96,
+                "value": 23
+            },
+            {
+                "key": 37,
+                "value": 146
+            },
+            {
+                "key": 7,
+                "value": 579
+            },
+            {
+                "key": 66,
+                "value": 409
+            },
+            {
+                "key": 4,
+                "value": 25612
+            },
+            {
+                "key": 131,
+                "value": 1
+            },
+            {
+                "key": 102,
+                "value": 101
+            },
+            {
+                "key": 23,
+                "value": 366
+            },
+            {
+                "key": 259,
+                "value": 1
+            },
+            {
+                "key": 262,
+                "value": 1
+            },
+            {
+                "key": 30,
+                "value": 524
+            },
+            {
+                "key": 69,
+                "value": 1587
+            },
+            {
+                "key": 10,
+                "value": 54
+            },
+            {
+                "key": 16,
+                "value": 44
+            },
+            {
+                "key": 134,
+                "value": 1
+            },
+            {
+                "key": 133,
+                "value": 3
+            },
+            {
+                "key": 104,
+                "value": 27
+            },
+            {
+                "key": 25,
+                "value": 8
+            },
+            {
+                "key": 261,
+                "value": 1
+            },
+            {
+                "key": 129,
+                "value": 10
+            },
+            {
+                "key": 11,
+                "value": 211
+            }
+        ],
         "size_map": [
             {
                 "key": "statistical_corrector",
