@@ -171,7 +171,7 @@ def create_app(data_folder: str = "sample_data",
             html.Div(
                 className="chart-container",
                 children=[
-                    html.H3("MPKBr Periodic Heatmap", className="section-title"),
+                    html.H3("Bimodal Table Access Heatmap", className="section-title"),
                     html.P(
                         "Visualization of number of access into Bimodal table memory. "
                         "Each cell represents one Bimodal counter.",
@@ -288,7 +288,8 @@ def create_app(data_folder: str = "sample_data",
         if not selected_trace or not sim_data:
             return go.Figure()
         trace_data = sim_data.get(selected_trace, {})
-        return create_stacked_area(trace_data.get("tage_usefull_entries", []))
+        names = [ "Shared table 1", "Shared table 2" ]
+        return create_stacked_area(trace_data.get("tage_usefull_entries", []), names)
 
     @app.callback(
         Output('src-misp-graph', 'figure'),

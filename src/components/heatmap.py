@@ -31,11 +31,11 @@ def create_heatmap(mpkbr_periodic: list) -> go.Figure:
     fig = go.Figure(data=go.Heatmap(
         z=heatmap_data,
         colorscale='Viridis',
-        colorbar=dict(title="MPKBr"),
+        colorbar=dict(title="Num Accesses"),
     ))
 
     fig.update_layout(
-        title=f"MPKBr Periodic Heatmap ({actual_size}x{actual_size} periods)",
+        title=f"Bimodal Table Access Heatmap ({actual_size}x{actual_size} periods)",
         xaxis_title="Period (column)",
         yaxis_title="Period (row)",
         template="plotly_white",
