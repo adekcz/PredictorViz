@@ -38,6 +38,7 @@ def create_app(data_folder: str = "sample_data",
     ]
 
     app = Dash(__name__)
+    app.title = "PredictViz"
 
     app.layout = html.Div(
         className="main-container",
