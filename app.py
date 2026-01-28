@@ -308,7 +308,10 @@ def create_app(data_folder: str = "sample_data",
 
     return app
 
+# Create app instance at module level for gunicorn
+app = create_app()
+server = app.server  # Gunicorn will import this
+
 if __name__ == "__main__":
-    app = create_app()
     print("Starting Branch Predictor Visualization Dashboard")
     app.run(debug=True)
