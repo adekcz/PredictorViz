@@ -1,0 +1,6 @@
+iservices:
+  - type: web
+    name: PredictVisualizator
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:server
