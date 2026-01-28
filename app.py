@@ -99,8 +99,6 @@ def create_app(data_folder: str = "sample_data",
                              "format": {"specifier": ".4f"}},
                         ],
                         data=table_data,
-                        row_selectable="single",
-                        selected_rows=[0] if table_data else [],
                         style_table={'overflowX': 'auto'},
                         style_cell={
                             'textAlign': 'left',
@@ -119,7 +117,7 @@ def create_app(data_folder: str = "sample_data",
                         },
                         style_data_conditional=[
                             {
-                                'if': {'state': 'selected'},
+                                'if': {'state': 'active'},
                                 'backgroundColor': '#e2e8f0',
                                 'border': '1px solid #1a365d',
                             },
@@ -212,29 +210,19 @@ def create_app(data_folder: str = "sample_data",
         ]
     )
 
-    # Callback to select row when any cell is clicked
-    @app.callback(
-        Output('trace-table', 'selected_rows'),
-        Input('trace-table', 'active_cell'),
-        Input('trace-table', 'selected_rows'),
-    )
-    def select_row_on_cell_click(active_cell, current_selected):
-        if active_cell is None:
-            return current_selected if current_selected else [0]
-        return [active_cell['row']]
-
-    # Callback to update selected trace store when table row is selected
+    # Callback to update selected trace store when a cell is clicked
+    # Uses active_cell and derived_virtual_data (sorted view) to get the trace name
     @app.callback(
         Output('selected-trace-store', 'data'),
-        Input('trace-table', 'selected_rows'),
-        Input('trace-table', 'data')
+        Input('trace-table', 'active_cell'),
+        Input('trace-table', 'derived_virtual_data')
     )
-    def update_selected_trace(selected_rows, table_data):
-        if not selected_rows or not table_data:
+    def update_selected_trace(active_cell, virtual_data):
+        if active_cell is None or not virtual_data:
             return default_trace
-        row_idx = selected_rows[0]
-        if row_idx < len(table_data):
-            return table_data[row_idx]['Trace']
+        row_idx = active_cell['row']
+        if row_idx < len(virtual_data):
+            return virtual_data[row_idx]['Trace']
         return default_trace
 
     @app.callback(
