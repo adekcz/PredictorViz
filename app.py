@@ -55,6 +55,23 @@ def create_app(data_folder: str = "sample_data",
                 ]
             ),
 
+            html.Div([
+                html.H3("Predictor Configuration", className="section-title"),
+                create_predictor_info(predictor_config),
+            ], className="chart-container"),
+
+            html.Div(
+                className="chart-container",
+                children=[
+                    html.H3("Size of Individual Predictor Components", className="section-title"),
+                    html.P(
+                        "Visualization of predictor structure and size of all components.",
+                        className="tree-map-description"
+                    ),
+                    dcc.Graph(id='tree-map'),
+                ]
+            ),
+
             # Trace selector table
             html.Div(
                 className="chart-container trace-table-container",
@@ -153,22 +170,6 @@ def create_app(data_folder: str = "sample_data",
                 ]
             ),
 
-            html.Div([
-                html.H3("Predictor Configuration", className="section-title"),
-                create_predictor_info(predictor_config),
-            ], className="chart-container"),
-
-            html.Div(
-                className="chart-container",
-                children=[
-                    html.H3("Size of Individual Predictor Components", className="section-title"),
-                    html.P(
-                        "Visualization of predictor structure and size of all components.",
-                        className="tree-map-description"
-                    ),
-                    dcc.Graph(id='tree-map'),
-                ]
-            ),
             html.Div(
                 className="chart-container",
                 children=[
