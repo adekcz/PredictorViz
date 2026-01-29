@@ -20,6 +20,15 @@ from src.components.stacked import create_stacked_area
 from src.components.predictor_info import create_predictor_info
 from src.components.summary_cards import create_summary_cards
 
+GRAPH_CONFIG = {
+    'toImageButtonOptions': {
+        'format': 'svg', 
+        'filename': 'image',
+        'height': 600,
+        'width': 1000,
+        'scale': 1
+    },
+}
 
 def create_app(data_folder: str = "sample_data",
                config_path: str = "sample_data/predictor.yml") -> Dash:
@@ -152,7 +161,7 @@ def create_app(data_folder: str = "sample_data",
                         "Each point represents a thousand retired branches.",
                         className="heatmap-description"
                     ),
-                    dcc.Graph(id='timeseries-graph'),
+                    dcc.Graph(id='timeseries-graph', config=GRAPH_CONFIG),
                 ]
             ),
             html.Div(
@@ -164,7 +173,7 @@ def create_app(data_folder: str = "sample_data",
                         "Sudden dips represent U bit reset which marks entries as not usefull.",
                         className="heatmap-description"
                     ),
-                    dcc.Graph(id='stacked-graph'),
+                    dcc.Graph(id='stacked-graph', config=GRAPH_CONFIG),
                 ]
             ),
 
@@ -177,7 +186,7 @@ def create_app(data_folder: str = "sample_data",
                         "Each cell represents one Bimodal counter.",
                         className="heatmap-description"
                     ),
-                    dcc.Graph(id='heatmap-graph'),
+                    dcc.Graph(id='heatmap-graph', config=GRAPH_CONFIG),
                 ]
             ),
             html.Div(
@@ -192,7 +201,7 @@ def create_app(data_folder: str = "sample_data",
                         " corrected by a Statistical Corrector (SC) component.",
                         className="heatmap-description"
                     ),
-                    dcc.Graph(id='src-misp-graph'),
+                    dcc.Graph(id='src-misp-graph', config=GRAPH_CONFIG),
                 ]
             ),
             html.Div(
